@@ -1,26 +1,70 @@
 package com.example.HotelManagement.model;
 
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.NonNull;
-import org.springframework.data.annotation.Id;
 
 import java.time.LocalDate;
 
-@Entity
 @Data
+@Entity
+@Table(name = "bookings")
 public class Booking {
-    @Id
-    private Long bid;
-    @NonNull
-    private LocalDate checkInDate;
-    @NonNull
-    private LocalDate checkOutDate;
-    private  int numOfAdults;
-    private int totalGuest;
-    @NonNull
-    private String bookingCode;
-    private Room room;
-    private User roomUser;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotNull(message = "check in date is required")
+    private LocalDate checkInDate;
+
+    @Future(message = "check out date must be in the future")
+    private LocalDate checkOutDate;
+
+    @Min(value = 1, message = "Number of adults must not be less that 1")
+    private int numOfAdults;
+
+    @Min(value = 0, message = "Number of children must not be less that 0")
+    private int numOfChildren;
+
+    private int totalNumOfGuest;
+
+    private String bookingConfirmationCode;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    private Room room;
+
+    public void calculateTotalNumberOfGuest() {
+        this.totalNumOfGuest = this.numOfAdults + this.numOfChildren;
+    }
+
+    public void setNumOfAdults(int numOfAdults) {
+        this.numOfAdults = numOfAdults;
+        calculateTotalNumberOfGuest();
+    }
+
+    public void setNumOfChildren(int numOfChildren) {
+        this.numOfChildren = numOfChildren;
+        calculateTotalNumberOfGuest();
+    }
+
+    @Override
+    public String toString() {
+        return "Booking{" +
+                "id=" + id +
+                ", checkInDate=" + checkInDate +
+                ", checkOutDate=" + checkOutDate +
+                ", numOfAdults=" + numOfAdults +
+                ", numOfChildren=" + numOfChildren +
+                ", totalNumOfGuest=" + totalNumOfGuest +
+                ", bookingConfirmationCode='" + bookingConfirmationCode + '\'' +
+                '}';
+    }
 }

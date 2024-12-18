@@ -1,24 +1,37 @@
 package com.example.HotelManagement.model;
-
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import lombok.Data;
-import lombok.NonNull;
-import org.springframework.data.annotation.Id;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
-@Entity
 @Data
+@Entity
+@Table(name = "rooms")
 public class Room {
+
+
     @Id
-    private Long rid;
-    @NonNull
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String roomType;
-    @NonNull
-    private Double roomPrice;
-    @NonNull
-    private String roomPhUrl;
-    @NonNull
-    private String roomDesc;
-    private List<Booking> booking;
+    private BigDecimal roomPrice;
+    private String roomPhotoUrl;
+    private String roomDescription;
+    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Booking> bookings = new ArrayList<>();
+
+
+    @Override
+    public String toString() {
+        return "Room{" +
+                "id=" + id +
+                ", roomType='" + roomType + '\'' +
+                ", roomPrice=" + roomPrice +
+                ", roomPhotoUrl='" + roomPhotoUrl + '\'' +
+                ", roomDescription='" + roomDescription + '\'' +
+                '}';
+    }
 }
