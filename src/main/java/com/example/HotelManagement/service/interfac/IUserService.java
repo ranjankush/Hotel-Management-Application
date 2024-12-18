@@ -1,2 +1,21 @@
-package com.example.HotelManagement.service.interfac;public interface IUserService {
+package com.example.HotelManagement.service.interfac;
+
+import com.example.HotelManagement.dto.LoginRequest;
+import com.example.HotelManagement.dto.Response;
+import com.example.HotelManagement.model.User;
+
+public interface IUserService {
+    Response register(User user);
+
+    Response login(LoginRequest loginRequest);
+
+    Response getAllUsers();
+
+    Response getUserBookingHistory(String userId);
+
+    Response deleteUser(String userId);
+
+    Response getUserById(String userId);
+
+    Response getMyInfo(String email);
 }
