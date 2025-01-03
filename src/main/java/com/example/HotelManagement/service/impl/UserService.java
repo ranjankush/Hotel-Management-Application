@@ -1,2 +1,8 @@
-package com.example.HotelManagement.service.impl;public class UserService {
+package com.example.HotelManagement.service.impl;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class UserService {
+
 }
