@@ -1,14 +1,19 @@
 package com.example.HotelManagement.repository;
 
 import com.example.HotelManagement.model.Booking;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
+import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+@Repository
+public interface BookingRepository extends MongoRepository<Booking,String> {
 
-public interface BookingRepository extends JpaRepository<Booking,Long> {
+    Optional<Booking> findByBookingConfirmationCode(String confirmationCode);
 
-    List<Booking> findByRoomId(Long roomId);
-    List<Booking> findByBookingConfirmationCode(String confirmationCode);
-    List<Booking>findByUserId(Long userId);
+    //checkInDate is less than or equal to the checkOutDate and while the checkOutDate is greater than or equal to the checkInDate
+    @Query("{ 'checkInDate': { $lte: ?1 }, 'checkOutDate': { $gte: ?0 } }")
+    List<Booking> findBookingsByDateRange(LocalDate checkInDate, LocalDate checkOutDate);
 }
