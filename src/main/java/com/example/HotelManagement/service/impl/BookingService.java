@@ -9,14 +9,13 @@ import com.example.HotelManagement.repository.UserRepository;
 import com.example.HotelManagement.service.interfac.IBookingService;
 import com.example.HotelManagement.service.interfac.IRoomService;
 import com.example.HotelManagement.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class BookingService implements IBookingService {
@@ -28,6 +27,12 @@ public class BookingService implements IBookingService {
     private RoomRepository roomRepository;
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EmailService emailService;
+
+    private static final Logger logger = LoggerFactory.getLogger(BookingService.class);
+
 
     @Override
     public Response saveBooking(String roomId, String userId, Booking bookingRequest) {
@@ -68,9 +73,18 @@ public class BookingService implements IBookingService {
             roomRepository.save(room);
 
 
-            response.setStatusCode(200);
-            response.setMessage("successful");
+            // Send booking confirmation email
+            Response emailResponse = sendBookingConfirmationEmail(user, savedBooking);
+
+            if (emailResponse.isSuccess()) {
+                response.setStatusCode(200);
+                response.setMessage("Booking created successfully. Confirmation email sent.");
+            } else {
+                response.setStatusCode(500);
+                response.setMessage("Booking created, but email failed to send.");
+            }
             response.setBookingConfirmationCode(bookingConfirmationCode);
+
 
         } catch (OurException e) {
             response.setStatusCode(404);
@@ -189,6 +203,31 @@ public class BookingService implements IBookingService {
     }
 
 
+public Response sendBookingConfirmationEmail(User user, Booking booking) {
+    Response response = new Response();
+    try {
+        String subject = "Booking Confirmation Message- The Taj Hotel";
+        String emailContent = String.format(
+                "Dear %s,\n\nYour booking at The Taj Hotel is confirmed.\nBooking Code: %s\nCheck-in Date: %s\nCheck-out Date: %s\n\nThank you!",
+                user.getName(), booking.getBookingConfirmationCode(), booking.getCheckInDate(), booking.getCheckOutDate());
+
+        emailService.sendEmail(user.getEmail(), subject, emailContent);
+        logger.info("Booking confirmation email sent to {}", user.getEmail());
+
+        response.setStatusCode(200);
+        response.setMessage("Email sent successfully.");
+        response.setSuccess(true);
+    } catch (Exception e) {
+        logger.error("Failed to send email to {}", user.getEmail(), e);
+        response.setStatusCode(500);
+        response.setMessage("Failed to send email.");
+        response.setSuccess(false);
+    }
+    return response;
+}
+
+
+
     private boolean roomIsAvailable(Booking bookingRequest, List<Booking> existingBookings) {
         return existingBookings.stream()
                 .noneMatch(existingBooking ->
@@ -210,5 +249,7 @@ public class BookingService implements IBookingService {
                                 && bookingRequest.getCheckOutDate().equals(bookingRequest.getCheckInDate()))
                 );
     }
+
+
 
 }

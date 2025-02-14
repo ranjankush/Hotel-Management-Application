@@ -29,7 +29,7 @@ public class RoomController {
             @RequestParam(value = "roomDescription", required = false) String roomDescription
     ) {
 
-        if (photo == null || photo.isEmpty() || roomType == null || roomType.isBlank() || roomPrice == null) {
+        if(photo == null || photo.isEmpty() || roomType == null || roomType.isBlank() || roomPrice == null) {
             Response response = new Response();
             response.setStatusCode(400);
             response.setMessage("Please Provide values for all fields(photo, roomType, roomPrice)");
@@ -38,7 +38,6 @@ public class RoomController {
         }
         Response response = roomService.addNewRoom(photo, roomType, roomPrice, roomDescription);
         return ResponseEntity.status(response.getStatusCode()).body(response);
-
 
     }
 

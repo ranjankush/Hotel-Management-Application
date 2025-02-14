@@ -23,6 +23,7 @@ public class Response {
     private List<UserDTO> userList;
     private List<RoomDTO> roomList;
     private List<BookingDTO> bookingList;
+    private boolean success;
 
     public int getStatusCode() {
         return statusCode;
@@ -118,5 +119,13 @@ public class Response {
 
     public void setBookingList(List<BookingDTO> bookingList) {
         this.bookingList = bookingList;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success=success;
     }
 }

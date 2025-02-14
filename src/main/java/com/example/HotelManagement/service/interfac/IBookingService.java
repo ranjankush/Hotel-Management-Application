@@ -2,6 +2,8 @@ package com.example.HotelManagement.service.interfac;
 
 import com.example.HotelManagement.dto.Response;
 import com.example.HotelManagement.model.Booking;
+import com.example.HotelManagement.model.User;
+
 public interface IBookingService {
     Response saveBooking(String roomId, String userId, Booking bookingRequest);
 
@@ -11,4 +13,7 @@ public interface IBookingService {
 
     Response cancelBooking(String bookingId);
     Response getBookingsByUserId(String userId);
+
+
+    Response sendBookingConfirmationEmail(User user,Booking booking);
 }
