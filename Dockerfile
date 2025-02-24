@@ -1,27 +1,20 @@
-# Use the latest available Maven 3.x version with Java 21
+# Build Stage
 FROM maven:3.9.6-eclipse-temurin-21 AS build
-
-# Set the working directory
 WORKDIR /app
-
-# Copy the project files
 COPY pom.xml .
 COPY src ./src
+RUN mvn clean package -DskipTests && \
+    rm -rf ~/.m2/repository
 
-# Build the project
-RUN mvn clean package -DskipTests
-
-# Use the official OpenJDK image to run the application
+# Run Stage
 FROM eclipse-temurin:21-jdk
-
-# Set the working directory
 WORKDIR /app
-
-# Copy the built jar file from the build stage
 COPY --from=build /app/target/HotelManagement-0.0.1-SNAPSHOT.jar app.jar
-
-# Expose the port your Spring Boot app runs on
 EXPOSE 8085
+
+# Create a non-root user
+RUN addgroup --system spring && adduser --system --ingroup spring spring
+USER spring
 
 # Run the application
 CMD ["java", "-jar", "app.jar"]
