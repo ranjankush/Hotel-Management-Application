@@ -36,7 +36,7 @@ public class UserService implements IUserService {
                 user.setRole("USER");
             }
 
-            if (userRepository.existsByEmail(user.getId())) {
+            if (userRepository.existsByEmail(user.getEmail())) {
                 throw new OurException("Email Already Exists");
             }
             user.setPassword(passwordEncoder.encode(user.getPassword()));

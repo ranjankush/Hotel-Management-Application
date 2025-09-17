@@ -52,15 +52,5 @@ public class BookingController {
         Response response = bookingService.getBookingsByUserId(userId);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
-
-//    @PostMapping("/book")
-//    public ResponseEntity<Response> bookRoom(@RequestBody Booking booking) {
-//        Response response = bookingService.createBooking(booking);
-//        if (response.isSuccess()) {
-//            return ResponseEntity.ok(response);
-//        } else {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-//        }
-//    }
-
 }
+
